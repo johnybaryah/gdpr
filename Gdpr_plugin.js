@@ -101,11 +101,9 @@ class GDPR{
 
     Init(){
         var eucookie = new Eu_Cookie("_eu_wes", 1);
-        console.log(eucookie.toString());
         var self = this;
         eucookie.get().then(function(cookieAlreadySet){
-            if (self.cookieAlreadySet) return;
-            console.log("inside get post execution " + typeof eucookie);
+            if (cookieAlreadySet) return;
             /* enable the code below when to use api - im disabling because I have site deployed on ssl and http call won't work*/
 
             /*var ip = new IpStack();
@@ -117,19 +115,20 @@ class GDPR{
 
                 self.showConsent(eucookie);
             });*/
+
+            /* disable this when enabling the code above */
             // if not eu
             if (!self.eu){
                 self.injectScripts();
                 return;
             }
-            console.log("before calling showConsent " + typeof eucookie);
+
             self.showConsent(eucookie);
             
         });
     }
 
     showConsent(eucookie){
-        console.log(eucookie.toString());
         var self = this;
         switch(this.mode){
             case "alert":
@@ -143,7 +142,6 @@ class GDPR{
                 $.get(this.modalContentUrl).done((modal) => {
                     $('body').append(modal);                        
                     $("#savecookie").on('click', function(){
-                        console.log(eucookie.toString());
                         eucookie.set().then(function(){
                             $("#myModal").modal('hide');
                             self.injectScripts();
@@ -176,79 +174,3 @@ class GDPR{
         return false;
     }
 }
-
-/*var SetGdprTerms = (function(){
-    var allowedParams = ["redirect", "alert", "modal"];
-
-    var init = function (a, s, w){
-        if (allowedParams.indexOf(a) === -1) {
-            console.log("Invalid value passed as parameter for init menthod.");
-            return;
-        }
-
-        // init cookie class
-        var eucookie = new Eu_Cookie("_eu_wes", 1);
-
-        eucookie.get().then(function(cookieAlreadySet){
-            if (cookieAlreadySet) return;
-
-            var ip = new IpStack();
-            ip.getInfo().done(function(json){
-                if (!json.location.is_eu) {
-                    if (s !== null) InjectScripts(s);
-                    return;
-                }
-
-
-            });
-        });
-
-        IsCookieSet().then(function(r){            
-            if (r) return false;
-
-            var url = "http://api.ipstack.com/check";
-            var key = "88de7a4a65b399634e9291d9070aac3f";    
-            var params = {access_key : key};
-
-            $.ajax({
-                url,
-                data: params,
-                dataType: "jsonp",
-                type: "GET"
-            }).done(function(json){
-                //if (!json.location.ie_eu) return;
-                
-                //if (!json.location.is_eu) {
-                //    InjectScripts(s);
-                //    return;
-                //}
-
-                if (a === "alert"){
-                    $.get("http://localhost/gdpr/alertText.html").done(function(text){
-                        //alert("here");
-                        var newDiv = $('<div/>').addClass("alert alert-info newPrivacyAlert").attr("role","alert").append(text);
-                        w.prepend(newDiv);
-                        $("#okButton").on("click", function(){ SetCookie().then(function(){ $(".newPrivacyAlert").hide('slow'); });});
-                    });
-                }
-                else if (a === "modal"){
-                    $.get("http://localhost/gdpr/terms.html").done((modal) => {
-                        $('body').append(modal);                        
-                        $("#savecookie").on('click', function(){
-                            SetCookie().then(function(){
-                                $("#myModal").modal('hide');
-                                InjectScripts(s);
-                            });
-                        });
-                        $("#myModal").modal();
-                    });
-                }
-                else{
-                    window.location.replace("http://localhost/gdpr/index1.html");
-                }
-            });   
-        });
-    }
-
-    return { init: init }
-})();*/
