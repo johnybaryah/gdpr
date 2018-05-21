@@ -52,32 +52,6 @@ class IpStack{
     }
 }
 
-/*var IsCookieSet = () => {
-    return new Promise(function(resolve, reject){
-        $.getScript("https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js")
-        .done(function(js){            
-            resolve(typeof Cookies.get("_eu_wes") !== "undefined");
-        });
-    });    
-};
-
-var SetCookie = () => {
-    return new Promise(function(resolve, reject){
-        $.getScript("https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js")
-        .done(function(js){
-            Cookies.set("_eu_wes", 1);
-            resolve();
-        });
-    });    
-};
-
-var InjectScripts = (scripts) => {
-    scripts.forEach(element => {
-        console.log(element);
-        $.getScript("http://localhost/gdpr/" + element);
-    });
-};*/
-
 // if is europe => getLocation()
 // then find a cookie
 // if no cookie is found
