@@ -27,6 +27,10 @@ class Eu_Cookie{
             });
         });
     }
+
+    toString(){
+        return this.name + ", " + this.val;
+    }
 }
 
 class IpStack{
@@ -124,6 +128,7 @@ class GDPR{
     }
 
     showConsent(eucookie){
+        console.log(eucookie.toString());
         var self = this;
         switch(this.mode){
             case "alert":
@@ -137,6 +142,7 @@ class GDPR{
                 $.get(this.modalContentUrl).done((modal) => {
                     $('body').append(modal);                        
                     $("#savecookie").on('click', function(){
+                        console.log(eucookie.toString());
                         eucookie.set().then(function(){
                             $("#myModal").modal('hide');
                             self.injectScripts();
