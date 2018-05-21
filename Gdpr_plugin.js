@@ -23,9 +23,16 @@ class Eu_Cookie{
         return new Promise(function(resolve, reject){
             $.getScript(self.scriptLink).done(function(){
                 Cookies.set(self.name, self.val);
+
+                // cookie set should also make a server call to log ipAddress
+
                 resolve();
             });
         });
+    }
+
+    logInfo(){
+
     }
 
     toString(){
@@ -77,7 +84,10 @@ class GDPR{
         var eucookie = new Eu_Cookie("_eu_wes", 1);
         var self = this;
         eucookie.get().then(function(cookieAlreadySet){
-            if (cookieAlreadySet) return;
+            if (cookieAlreadySet){
+                self.injectScripts();
+                return;
+            } 
             /* enable the code below when to use api - im disabling because I have site deployed on ssl and http call won't work*/
 
             /*var ip = new IpStack();
