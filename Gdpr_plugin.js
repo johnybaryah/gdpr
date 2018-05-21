@@ -91,8 +91,8 @@ class GDPR{
         
         this.checkParams();
 
-        this.modalContentUrl = "http://localhost/gdpr/terms.html";
-        this.alertContentUrl = "http://localhost/gdpr/alertText.html";
+        this.modalContentUrl = "https://jsgdps.azurewebsites.net/terms.html";
+        this.alertContentUrl = "https://jsgdps.azurewebsites.net/alertText.html";
     }
 
     Init(){
@@ -152,7 +152,7 @@ class GDPR{
 
     injectScripts(){
         this.ScriptsToInject.forEach(script => {
-            $.getScript("http://localhost/gdpr/" + script);
+            $.getScript("https://jsgdps.azurewebsites.net/" + script);
         });
     }
 
