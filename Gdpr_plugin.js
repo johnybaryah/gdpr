@@ -137,7 +137,7 @@ class GDPR{
                 $.get(this.modalContentUrl).done((modal) => {
                     $('body').append(modal);                        
                     $("#savecookie").on('click', function(){
-                        SetCookie().then(function(){
+                        eucookie.set().then(function(){
                             $("#myModal").modal('hide');
                             self.injectScripts();
                         });
