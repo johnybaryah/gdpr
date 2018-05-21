@@ -101,10 +101,11 @@ class GDPR{
 
     Init(){
         var eucookie = new Eu_Cookie("_eu_wes", 1);
+        console.log(eucookie.toString());
         var self = this;
         eucookie.get().then(function(cookieAlreadySet, eucookie){
             if (self.cookieAlreadySet) return;
-            
+            console.log("inside get post execution " + typeof eucookie);
             /* enable the code below when to use api - im disabling because I have site deployed on ssl and http call won't work*/
 
             /*var ip = new IpStack();
@@ -121,7 +122,7 @@ class GDPR{
                 self.injectScripts();
                 return;
             }
-
+            console.log("before calling showConsent " + typeof eucookie);
             self.showConsent(eucookie);
             
         });
