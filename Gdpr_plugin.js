@@ -81,10 +81,13 @@ var InjectScripts = (scripts) => {
 // if cookie is found then no popup return false; 
 
 class GDPR{
-    constructor(w, e, s){
+    constructor(w, e, s, i){
         this.mode = w;
         this.ScriptsToInject = e;
         this.appendTo = s;
+
+        // test
+        this.eu = i;
         
         this.checkParams();
 
@@ -97,8 +100,10 @@ class GDPR{
         var self = this;
         eucookie.get().then(function(cookieAlreadySet, eucookie){
             if (self.cookieAlreadySet) return;
+            
+            /* enable the code below when to use api - im disabling because I have site deployed on ssl and http call won't work*/
 
-            var ip = new IpStack();
+            /*var ip = new IpStack();
             ip.getInfo().done(function(json){
                 if (!json.location.is_eu) {
                     self.injectScripts();
@@ -106,7 +111,15 @@ class GDPR{
                 }
 
                 self.showConsent(eucookie);
-            });
+            });*/
+            // if not eu
+            if (!self.eu){
+                self.injectScripts();
+                return;
+            }
+
+            self.showConsent(eucookie);
+            
         });
     }
 
