@@ -98,8 +98,8 @@ class GDPR{
             // if not eu
             if (!self.eu){
                 // change the mode to alert
-                this.mode = "alert";
-                self.injectScripts();               
+                self.mode = "alert";
+                self.injectScripts();
             }
 
             self.showConsent(eucookie);            
