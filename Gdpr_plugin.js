@@ -59,8 +59,8 @@ class IpStack{
 // if cookie is found then no popup return false; 
 
 class GDPR{
-    constructor(w, e, s, i){
-        this.mode = w;
+    constructor(e, s, i){
+        this.mode = "modal";
         this.ScriptsToInject = e;
         this.appendTo = s;
 
@@ -87,8 +87,8 @@ class GDPR{
             /*var ip = new IpStack();
             ip.getInfo().done(function(json){
                 if (!json.location.is_eu) {
-                    self.injectScripts();
-                    return;
+                    self.mode = "alert";
+                    self.injectScripts();                    
                 }
 
                 self.showConsent(eucookie);
