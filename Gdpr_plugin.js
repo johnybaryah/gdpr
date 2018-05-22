@@ -22,17 +22,10 @@ class Eu_Cookie{
         var self = this;
         return new Promise(function(resolve, reject){
             $.getScript(self.scriptLink).done(function(){
-                Cookies.set(self.name, self.val);
-
-                // cookie set should also make a server call to log ipAddress
-
+                Cookies.set(self.name, self.val, { expires: 1825 });
                 resolve();
             });
         });
-    }
-
-    logInfo(){
-
     }
 
     toString(){
@@ -76,18 +69,20 @@ class GDPR{
         
         this.checkParams();
 
-        this.modalContentUrl = "https://jsgdps.azurewebsites.net/terms.html";
-        this.alertContentUrl = "https://jsgdps.azurewebsites.net/alertText.html";
+        //this.modalContentUrl = "https://jsgdps.azurewebsites.net/terms.html";
+        //this.alertContentUrl = "https://jsgdps.azurewebsites.net/alertText.html";
+	this.modalContentUrl = "http://localhost/gdpr-master/terms.html";
+        this.alertContentUrl = "http://localhost/gdpr-master/alertText.html";
     }
 
     Init(){
         var eucookie = new Eu_Cookie("_eu_wes", 1);
         var self = this;
         eucookie.get().then(function(cookieAlreadySet){
-            if (cookieAlreadySet){
+            if (cookieAlreadySet) {
                 self.injectScripts();
                 return;
-            } 
+            }
             /* enable the code below when to use api - im disabling because I have site deployed on ssl and http call won't work*/
 
             /*var ip = new IpStack();
@@ -103,12 +98,12 @@ class GDPR{
             /* disable this when enabling the code above */
             // if not eu
             if (!self.eu){
-                self.injectScripts();
-                return;
+                // change the mode to alert
+                this.mode = "alert";
+                self.injectScripts();               
             }
 
-            self.showConsent(eucookie);
-            
+            self.showConsent(eucookie);            
         });
     }
 
@@ -118,20 +113,20 @@ class GDPR{
             case "alert":
                 $.get(this.alertContentUrl).done(function(text){
                     var newDiv = $('<div/>').addClass("alert alert-info newPrivacyAlert").attr("role","alert").append(text);
-                    w.prepend(newDiv);
+                    self.appendTo.prepend(newDiv);
                     $("#okButton").on("click", function(){ eucookie.set().then(function(){ $(".newPrivacyAlert").hide('slow'); });});
                 });
                 break;
             case "modal":
                 $.get(this.modalContentUrl).done((modal) => {
-                    $('body').append(modal);                        
+                    self.appendTo.append(modal);                        
                     $("#savecookie").on('click', function(){
                         eucookie.set().then(function(){
                             $("#myModal").modal('hide');
                             self.injectScripts();
                         });
                     });
-                    $("#myModal").modal();
+                    $("#myModal").modal({backdrop: 'static', keyboard: false});
                 });
             case "redirect":
                 break;
@@ -141,7 +136,9 @@ class GDPR{
 
     injectScripts(){
         this.ScriptsToInject.forEach(script => {
-            $.getScript("https://jsgdps.azurewebsites.net/" + script);
+            //$.getScript("https://jsgdps.azurewebsites.net/" + script);
+
+		$.getScript("http://localhost/gdpr-master/" + script);
         });
     }
 
