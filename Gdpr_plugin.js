@@ -2,23 +2,19 @@
 WES GDPR popup - coooooookie
 */
 
-class Eu_Cookie{    
-    constructor(name, val){
-        this.name = name;
-        this.scriptLink = "https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js";
-        this.val = val;
-    }
-
-    get(){
+var wes_cookie = {
+    name : "_eu_wes",
+    val: 1,
+    scriptLink : "https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js",
+    get: function() {
         var self = this;
         return new Promise(function(resolve, reject){
             $.getScript(self.scriptLink).done(function(js){
                 resolve(typeof Cookies.get(self.name) !== "undefined");
             });
         });
-    }
-    
-    set(){
+    },
+    set: function() {
         var self = this;
         return new Promise(function(resolve, reject){
             $.getScript(self.scriptLink).done(function(){
@@ -26,20 +22,19 @@ class Eu_Cookie{
                 resolve();
             });
         });
-    }
-
-    toString(){
+    },
+    toString: function() {
         return this.name + ", " + this.val;
     }
 }
 
 var IpStack = {
-    getInfo : () => {        
+    getInfo : function() {
         var options = $.extend( options || {}, {
             dataType: "jsonp",
             type: "GET",
             url: "http://api.ipstack.com/check",
-            data: { access_key : "88de7a4a65b399634e9291d9070aac3f" }
+            data: { access_key : "91470bf648eedda2b1f664aee50db435" }
         });
         return $.ajax(options);
     }
@@ -59,65 +54,46 @@ class GDPR{
         this.ScriptsToInject = options.js;
         this.appendTo = options.appendTo;
         this.site = options.site;
-
-        // test
-        this.eu = options.isEu;
         
         this.checkParams();
 
         this.modalContentUrl = this.getPrivacyLink();
-        this.alertContentUrl = "https://jsgdps.azurewebsites.net/alertText.html";
-	    
+        this.alertContentUrl = "https://jsgdps.azurewebsites.net/alertText.html";	    
     }
 
-    Init(){
-        var eucookie = new Eu_Cookie("_eu_wes", 1);
+    Init(){        
         var self = this;
-        eucookie.get().then(function(cookieAlreadySet){
+        wes_cookie.get().then(function(cookieAlreadySet){
             if (cookieAlreadySet) {
                 self.injectScripts();
                 return;
             }
 
-            /* enable the code below when to use api - im disabling because I have site deployed on ssl and http call won't work*/
-
-            /*            
             IpStack.getInfo().done(function(json){
                 if (!json.location.is_eu) {
                     self.mode = "alert";
-                    self.injectScripts();                    
+                    self.injectScripts();
                 }
-
-                self.showConsent(eucookie);
-            });*/
-
-            /* disable this when enabling the code above */
-            // if not eu
-            if (!self.eu){
-                // change the mode to alert
-                self.mode = "alert";
-                self.injectScripts();
-            }
-
-            self.showConsent(eucookie);            
+                self.showConsent();
+            });
         });
     }
 
-    showConsent(eucookie){
+    showConsent(){
         var self = this;
         switch(this.mode){
             case "alert":
                 $.get(this.alertContentUrl).done(function(text){
                     var newDiv = $('<div/>').addClass("alert alert-info newPrivacyAlert").attr("role","alert").append(text);
                     self.appendTo.prepend(newDiv);
-                    $("#okButton").on("click", function(){ eucookie.set().then(function(){ $(".newPrivacyAlert").hide('slow'); });});
+                    $("#okButton").on("click", function(){ wes_cookie.set().then(function(){ $(".newPrivacyAlert").hide('slow'); });});
                 });
                 break;
             case "modal":
                 $.get(this.modalContentUrl).done((modal) => {
                     self.appendTo.append(modal);                        
                     $("#savecookie").on('click', function(){
-                        eucookie.set().then(function(){
+                        wes_cookie.set().then(function(){
                             $("#myModal").modal('hide');
                             self.injectScripts();
                         });
@@ -152,7 +128,6 @@ class GDPR{
     }
 
     throwError(msg){
-        console.log(msg);
-        return;
+        throw msg;
     }
 }
