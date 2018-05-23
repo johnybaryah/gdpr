@@ -15,20 +15,19 @@ var wes_cookie = {
         });
     },
     set: function() {
-        var self = this;
-        return new Promise(function(resolve, reject){
-            $.getScript(self.scriptLink).done(function(){
-                Cookies.set(self.name, self.val, { expires: 1825 });
-                resolve();
-            });
+        var self = this;        
+        $.getScript(self.scriptLink).done(function(){
+            Cookies.set(self.name, self.val, { expires: 1825 });
+            return self.get();
         });
+        
     },
     toString: function() {
         return this.name + ", " + this.val;
     }
 }
 
-var IpStack = {
+var Ip = {
     getInfo : function() {
         var options = $.extend( options || {}, {
             dataType: "jsonp",
@@ -40,28 +39,22 @@ var IpStack = {
     }
 }
 
-// if is europe => getLocation()
-// then find a cookie
-// if no cookie is found
-// then show popup - set cookie on save
-// if cookie is found then no popup return false; 
-
-class GDPR{
+class user_consent{
     constructor(options){
         if (typeof options !== "object") this.throwError("Invalid parameter");
 
         this.mode = "modal";
-        this.ScriptsToInject = options.js;
-        this.appendTo = options.appendTo;
+        this.ScriptsToInject = options.js;        
+        this.appendTo = options.el.name;        
         this.site = options.site;
         
         this.checkParams();
 
-        this.modalContentUrl = this.getPrivacyLink();
-        this.alertContentUrl = "https://jsgdps.azurewebsites.net/alertText.html";	    
+        this.modalContentUrl = this.getModalContent();
+        this.alertContentUrl = this.getAlertContent();
     }
 
-    Init(){        
+    init(){
         var self = this;
         wes_cookie.get().then(function(cookieAlreadySet){
             if (cookieAlreadySet) {
@@ -69,13 +62,22 @@ class GDPR{
                 return;
             }
 
-            IpStack.getInfo().done(function(json){
-                if (!json.location.is_eu) {
-                    self.mode = "alert";
-                    self.injectScripts();
-                }
+            try {
+                Ip.getInfo().done(function(json){
+                    if (!json.location.is_eu) {
+                        self.mode = "alert";
+                        self.injectScripts();
+                    }
+                    self.showConsent();
+                });
+            }
+            catch(error){
+                console.log("error occured: " + error)
+
+                // continue as if eu
+                self.injectScripts();
                 self.showConsent();
-            });
+            }            
         });
     }
 
@@ -84,16 +86,23 @@ class GDPR{
         switch(this.mode){
             case "alert":
                 $.get(this.alertContentUrl).done(function(text){
-                    var newDiv = $('<div/>').addClass("alert alert-info newPrivacyAlert").attr("role","alert").append(text);
+                    var newDiv = $('<div/>').addClass("alert alert-info newPrivacyAlert").attr("role","alert").append(text);                    
                     self.appendTo.prepend(newDiv);
-                    $("#okButton").on("click", function(){ wes_cookie.set().then(function(){ $(".newPrivacyAlert").hide('slow'); });});
+
+                    $("#okButton").on("click", function(){ 
+                        wes_cookie.set().then(function(success){ 
+                            if (!success) console.log("cookie not set...");                            
+                            $(".newPrivacyAlert").hide('slow'); 
+                        });
+                    });
                 });
                 break;
             case "modal":
-                $.get(this.modalContentUrl).done((modal) => {
-                    self.appendTo.append(modal);                        
+                $.get(this.modalContentUrl).done((modal) => {                    
+                    self.appendTo.prepend(modal);
                     $("#savecookie").on('click', function(){
-                        wes_cookie.set().then(function(){
+                        wes_cookie.set().then(function(success){
+                            if (!success) console.log("cookie not set...");
                             $("#myModal").modal('hide');
                             self.injectScripts();
                         });
@@ -105,13 +114,24 @@ class GDPR{
             default: break;
         }
     }
-
-    getPrivacyLink(){
+    
+    getModalContent(){
         switch (this.site){
-            case "wes": return "https://jsgdps.azurewebsites.net/terms.html"
-            case "imp": return ""
-            case "wenr": return ""
-            case "gtb": return ""
+            case "wes": return "https://jsgdps.azurewebsites.net/terms.html";
+            case "imp": return "";
+            case "wenr": return "";
+            case "gtb": return "";
+            default: return "https://jsgdps.azurewebsites.net/terms.html";
+        }
+    }
+
+    getModalContent(){
+        switch (this.site){
+            case "wes": return "https://jsgdps.azurewebsites.net/alertText.html";
+            case "imp": return "";
+            case "wenr": return "";
+            case "gtb": return "";
+            default: return "https://jsgdps.azurewebsites.net/alertText.html";
         }
     }
 

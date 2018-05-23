@@ -67,12 +67,11 @@
             $(function(){
                 var options = {
                     js: ['js1.js', 'js2.js'],
-                    appendTo : $('body'),
-                    site: "wes",
-                    isEu: true
+                    el : { name: $('body') },
+                    site: "w"
                 }
-                var eu = new GDPR(options);                
-                eu.Init();
+                var consent = new user_consent(options);
+                consent.init();
             })            
         </script>
     </body>
