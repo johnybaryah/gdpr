@@ -33,7 +33,7 @@ var IpStack = {
         var options = $.extend( options || {}, {
             dataType: "jsonp",
             type: "GET",
-            url: "http://api.ipstack.com/check",
+            url: "https://api.ipstack.com/check",
             data: { access_key : "91470bf648eedda2b1f664aee50db435" }
         });
         return $.ajax(options);
