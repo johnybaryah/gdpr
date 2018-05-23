@@ -15,12 +15,13 @@ var wes_cookie = {
         });
     },
     set: function() {
-        var self = this;        
-        $.getScript(self.scriptLink).done(function(){
-            Cookies.set(self.name, self.val, { expires: 1825 });
-            return self.get();
+        var self = this;      
+        return new Promise(function(resolve, reject){
+            $.getScript(self.scriptLink).done(function(){
+                Cookies.set(self.name, self.val, { expires: 1825 });
+                resolve();
+            });
         });
-        
     },
     toString: function() {
         return this.name + ", " + this.val;
