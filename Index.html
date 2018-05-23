@@ -65,6 +65,7 @@
 
         <script>
             $(function(){
+<<<<<<< HEAD
                 var options = {
                     js: ['js1.js', 'js2.js'],
                     appendTo : $('body'),
@@ -72,6 +73,9 @@
                     isEu: true
                 }
                 var eu = new GDPR(options);
+=======
+                var eu = new GDPR(['js1.js', 'js2.js'], $('body'), false);
+>>>>>>> e1275a4c9261d11d84b6ca978404bf81b94b944c
                 eu.Init();
             })            
         </script>
