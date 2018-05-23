@@ -61,15 +61,17 @@
             <p class="lead">
                 <input type="button" id="btn2" class="btn btn-primary btn-lg" value="Show Alert" />
             </p>
-        </div>
-        <div class="alert alert-dismissible alert-info moveMe" style="display:none;">
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
-            <strong>TERMS AND CONDITIONSSSSSSSSSSSSSSSSSSSSSSSSS!!!!!!</strong> 
-        </div>
+        </div>        
 
         <script>
             $(function(){
-                var eu = new GDPR(['js1.js', 'js2.js'], $('body'), true);
+                var options = {
+                    js: ['js1.js', 'js2.js'],
+                    appendTo : $('body'),
+                    site: "w",
+                    isEu: true
+                }
+                var eu = new GDPR(options);
                 eu.Init();
             })            
         </script>

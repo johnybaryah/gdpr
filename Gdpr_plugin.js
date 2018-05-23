@@ -33,21 +33,14 @@ class Eu_Cookie{
     }
 }
 
-class IpStack{
-    constructor(){
-        this.url = "http://api.ipstack.com/check";        
-        this.params = {access_key : "88de7a4a65b399634e9291d9070aac3f"};
-    }
-
-    getInfo(){
-        
+var IpStack = {
+    getInfo : () => {        
         var options = $.extend( options || {}, {
             dataType: "jsonp",
             type: "GET",
-            url: this.url,
-            data: this.params
+            url: "http://api.ipstack.com/check",
+            data: {access_key : "88de7a4a65b399634e9291d9070aac3f"}
         });
-
         return $.ajax(options);
     }
 }
@@ -59,13 +52,16 @@ class IpStack{
 // if cookie is found then no popup return false; 
 
 class GDPR{
-    constructor(e, s, i){
+    constructor(options){
+        if (typeof options !== "object") this.throwError("Invalid parameter");
+
         this.mode = "modal";
-        this.ScriptsToInject = e;
-        this.appendTo = s;
+        this.ScriptsToInject = options.js;
+        this.appendTo = options.appendTo;
+        this.site = options.site;
 
         // test
-        this.eu = i;
+        this.eu = options.isEu;
         
         this.checkParams();
 
@@ -82,10 +78,11 @@ class GDPR{
                 self.injectScripts();
                 return;
             }
+
             /* enable the code below when to use api - im disabling because I have site deployed on ssl and http call won't work*/
 
-            /*var ip = new IpStack();
-            ip.getInfo().done(function(json){
+            /*            
+            IpStack.getInfo().done(function(json){
                 if (!json.location.is_eu) {
                     self.mode = "alert";
                     self.injectScripts();                    
