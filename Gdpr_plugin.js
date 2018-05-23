@@ -91,8 +91,7 @@ class user_consent{
                     self.appendTo.prepend(newDiv);
 
                     $("#okButton").on("click", function(){ 
-                        wes_cookie.set().then(function(success){ 
-                            if (!success) console.log("cookie not set...");                            
+                        wes_cookie.set().then(function(){                             
                             $(".newPrivacyAlert").hide('slow'); 
                         });
                     });
@@ -102,8 +101,7 @@ class user_consent{
                 $.get(this.modalContentUrl).done((modal) => {                    
                     self.appendTo.prepend(modal);
                     $("#savecookie").on('click', function(){
-                        wes_cookie.set().then(function(success){
-                            if (!success) console.log("cookie not set...");
+                        wes_cookie.set().then(function(){
                             $("#myModal").modal('hide');
                             self.injectScripts();
                         });
