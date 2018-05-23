@@ -146,13 +146,13 @@ class GDPR{
     }
 
     checkParams(){
-        if (!Array.isArray(this.ScriptsToInject)) return this.throwError("js must be an array of js scripts.");
-        if (this.appendTo instanceof jQuery === false) return this.throwError("appendTo must be a jquery selecter object");        
-        if (["wes", "gtb", "imp", "wenr"].indexOf(this.site) === -1) return this.throwError("Invalid site parameter.");
+        if (!Array.isArray(this.ScriptsToInject)) this.throwError("js must be an array of js scripts.");
+        if (this.appendTo instanceof jQuery === false) this.throwError("appendTo must be a jquery selecter object");        
+        if (["wes", "gtb", "imp", "wenr"].indexOf(this.site) === -1) this.throwError("Invalid site parameter.");
     }
 
     throwError(msg){
         console.log(msg);
-        return false;
+        return;
     }
 }
