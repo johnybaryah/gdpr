@@ -125,7 +125,7 @@ class user_consent{
         }
     }
 
-    getModalContent(){
+    getAlertContent(){
         switch (this.site){
             case "wes": return "https://jsgdps.azurewebsites.net/alertText.html";
             case "imp": return "";
