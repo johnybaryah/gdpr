@@ -39,7 +39,7 @@ var IpStack = {
             dataType: "jsonp",
             type: "GET",
             url: "http://api.ipstack.com/check",
-            data: {access_key : "88de7a4a65b399634e9291d9070aac3f"}
+            data: { access_key : "88de7a4a65b399634e9291d9070aac3f" }
         });
         return $.ajax(options);
     }
@@ -65,7 +65,7 @@ class GDPR{
         
         this.checkParams();
 
-        this.modalContentUrl = "https://jsgdps.azurewebsites.net/terms.html";
+        this.modalContentUrl = this.getPrivacyLink();
         this.alertContentUrl = "https://jsgdps.azurewebsites.net/alertText.html";
 	    
     }
@@ -130,6 +130,15 @@ class GDPR{
         }
     }
 
+    getPrivacyLink(){
+        switch (this.site){
+            case "wes": return "https://jsgdps.azurewebsites.net/terms.html"
+            case "imp": return ""
+            case "wenr": return ""
+            case "gtb": return ""
+        }
+    }
+
     injectScripts(){
         this.ScriptsToInject.forEach(script => {
             $.getScript("https://jsgdps.azurewebsites.net/" + script);		
@@ -137,11 +146,9 @@ class GDPR{
     }
 
     checkParams(){
-        var allowedParams = ["redirect", "alert", "modal"];
-
-        if (!Array.isArray(this.ScriptsToInject)) return this.throwError("second parameter should be of type array");
-        if (this.appendTo instanceof jQuery === false) return this.throwError("3rd parameter must be a jquery selecter object");
-        if (allowedParams.indexOf(this.mode) === -1) return this.throwError("Invalid value passed as parameter for init menthod.");
+        if (!Array.isArray(this.ScriptsToInject)) return this.throwError("js must be an array of js scripts.");
+        if (this.appendTo instanceof jQuery === false) return this.throwError("appendTo must be a jquery selecter object");        
+        if (["wes", "gtb", "imp", "wenr"].indexOf(this.site) === -1) return this.throwError("Invalid site parameter.");
     }
 
     throwError(msg){
