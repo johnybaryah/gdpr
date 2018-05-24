@@ -55,50 +55,45 @@ class user_consent{
         this.alertContentUrl = this.getAlertContent();
     }
 
-    init(){
-        var self = this;
-        wes_cookie.get().then(function(cookieAlreadySet){
+    init(){        
+        wes_cookie.get().then((cookieAlreadySet)=>{
             if (cookieAlreadySet) {
-                self.injectScripts();
+                this.injectScripts();
                 return;
             }
 
             try {
-                Ip.getInfo().done(function(json){
+                Ip.getInfo().done((json)=>{
                     if (!json.location.is_eu) {
-                        self.mode = "alert";
-                        self.injectScripts();
+                        this.mode = "alert";
+                        this.injectScripts();
                     }
-                    self.showConsent();
+                    this.showConsent();
                 });
             }
             catch(error){
                 console.log("error occured: " + error)
 
                 // continue as if eu
-                self.showConsent();
+                this.showConsent();
             }            
         });
     }
 
-    showConsent(){
-        var self = this;
+    showConsent(){        
         switch(this.mode){
             case "alert":
-                $.get(this.alertContentUrl).done(function(text){
+                $.get(this.alertContentUrl).done((text)=>{
                     var newDiv = $('<div/>').addClass("alert alert-info newPrivacyAlert").attr("role","alert").append(text);
-                    self.appendTo.prepend(newDiv);
-                    self.setButtons(self);
+                    this.appendTo.prepend(newDiv);
+                    this.setButtons();
                 });
                 break;
             case "modal":
                 $.get(this.modalContentUrl).done((modal) => {
-                    console.log("inside model");
-                    console.log(this);
-                    console.log(self);
-                    self.appendTo.prepend(modal); 
+                    this.appendTo.prepend(modal); 
                     $("#myModal").modal({backdrop: 'static', keyboard: false});
-                    self.setButtons();
+                    this.setButtons();
                 });
             case "redirect":
                 break;
@@ -138,8 +133,7 @@ class user_consent{
         return "https://" + window.location.hostname + "/alertText.html";
     }    
 
-    injectScripts(){
-        console.log(this.ScriptsToInject);
+    injectScripts(){        
         this.ScriptsToInject.forEach(script => {
             $.getScript("https://applications.wes.org/js/" + script);		
         });
