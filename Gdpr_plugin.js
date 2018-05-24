@@ -152,6 +152,7 @@ class user_consent{
     }
     
     getModalContent(){
+        console.log(window.location.hostname);
         return window.location.hostname + "/terms.html";
     }
 
