@@ -10,7 +10,7 @@ var wes_cookie = {
         var self = this;
         return new Promise(function(resolve, reject){
             $.getScript(self.scriptLink).done(function(js){
-                resolve(typeof Cookies.get(self.name) !== "undefined");
+                resolve(typeof Cookies.get(self.name, { domain: 'wes.org' }) !== "undefined");
             });
         });
     },
@@ -18,7 +18,7 @@ var wes_cookie = {
         var self = this;      
         return new Promise(function(resolve, reject){
             $.getScript(self.scriptLink).done(function(){
-                Cookies.set(self.name, self.val, { expires: 1825 });
+                Cookies.set(self.name, self.val, { expires: 1825, domain: 'wes.org' });
                 resolve();
             });
         });
