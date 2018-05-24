@@ -45,17 +45,14 @@ class user_consent{
         if (typeof options !== "object") this.throwError("Invalid parameter");
 
         this.mode = "modal";
-        this.ScriptsToInject = options.js;        
-        this.appendTo = options.el.name;        
+        this.ScriptsToInject = options.js;
+        this.appendTo = options.el.name;
         this.site = options.site;
         
         this.checkParams();
 
         this.modalContentUrl = this.getModalContent();
         this.alertContentUrl = this.getAlertContent();
-
-        console.log(this.modalContentUrl);
-        console.log(this.alertContentUrl);
     }
 
     init(){
@@ -86,42 +83,22 @@ class user_consent{
 
     showConsent(){
         var self = this;
-
         switch(this.mode){
             case "alert":
                 $.get(this.alertContentUrl).done(function(text){
-                    console.log("in alert!");
-                    console.log(this);
-                    console.log(self);
-
                     var newDiv = $('<div/>').addClass("alert alert-info newPrivacyAlert").attr("role","alert").append(text);
                     self.appendTo.prepend(newDiv);
                     self.setButtons(self);
                 });
                 break;
             case "modal":
-                $.get(this.modalContentUrl).done((modal) => {                    
-                    self.appendTo.prepend(modal);                    
-                    $("#myModal").modal({backdrop: 'static', keyboard: false});
-                    console.log("in modal!");
+                $.get(this.modalContentUrl).done((modal) => {
+                    console.log("inside model");
                     console.log(this);
                     console.log(self);
-                    self.setButtons(self);
-
-                    /*$("#savecookie").on('click', function(){
-                        wes_cookie.set().then(function(){
-                            $("#myModal").modal('hide');
-                            self.injectScripts();
-                        });
-                    });
-                    
-                    var path = "https://www.wes.org/";
-                    if (window.location.href.indexOf("/ca/") !== -1){
-                        path += "ca/";
-                    }
-
-                    $("#pp").attr("href", path + "privacy-policy/");
-                    $("#cc").attr("href", path + "cookie-policy/");*/
+                    self.appendTo.prepend(modal); 
+                    $("#myModal").modal({backdrop: 'static', keyboard: false});
+                    self.setButtons();
                 });
             case "redirect":
                 break;
@@ -129,9 +106,9 @@ class user_consent{
         }
     }
 
-    setButtons(that){
-        console.log("in setButtons!");
-        console.log(this);
+    setButtons(){
+        var self = this;
+
         var path = "https://www.wes.org/";
         if (window.location.href.indexOf("/ca/") !== -1){
             path += "ca/";
@@ -142,14 +119,13 @@ class user_consent{
 
         $("#btnIAccept").on("click", function(){ 
             wes_cookie.set().then(function(){
-                if (that.mode === "alert"){
+                if (self.mode === "alert"){
                     $(".newPrivacyAlert").hide('slow'); 
                 }
                 else{
                     $("#myModal").modal('hide');
-                    that.injectScripts();
-                }
-                
+                    self.injectScripts();
+                }                
             });
         });
     }
@@ -163,6 +139,7 @@ class user_consent{
     }    
 
     injectScripts(){
+        console.log(this.ScriptsToInject);
         this.ScriptsToInject.forEach(script => {
             $.getScript("https://applications.wes.org/js/" + script);		
         });
