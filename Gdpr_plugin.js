@@ -53,6 +53,9 @@ class user_consent{
 
         this.modalContentUrl = this.getModalContent();
         this.alertContentUrl = this.getAlertContent();
+
+        console.log(this.modalContentUrl);
+        console.log(this.alertContentUrl);
     }
 
     init(){
@@ -152,13 +155,11 @@ class user_consent{
     }
     
     getModalContent(){
-        console.log(window.location.hostname);
-        return window.location.hostname + "/terms.html";
+        return "https://" + window.location.hostname + "/terms.html";
     }
 
-    getAlertContent(){
-        console.log(window.location.hostname);
-        return window.location.hostname + "/alertText.html";
+    getAlertContent(){        
+        return "https://" + window.location.hostname + "/alertText.html";
     }    
 
     injectScripts(){
