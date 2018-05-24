@@ -83,55 +83,81 @@ class user_consent{
 
     showConsent(){
         var self = this;
+
         switch(this.mode){
             case "alert":
                 $.get(this.alertContentUrl).done(function(text){
-                    var newDiv = $('<div/>').addClass("alert alert-info newPrivacyAlert").attr("role","alert").append(text);                    
-                    self.appendTo.prepend(newDiv);
+                    console.log("in alert!");
+                    console.log(this);
+                    console.log(self);
 
-                    $("#okButton").on("click", function(){ 
-                        wes_cookie.set().then(function(){                             
-                            $(".newPrivacyAlert").hide('slow'); 
-                        });
-                    });
+                    var newDiv = $('<div/>').addClass("alert alert-info newPrivacyAlert").attr("role","alert").append(text);
+                    self.appendTo.prepend(newDiv);
+                    self.setButtons(self);
                 });
                 break;
             case "modal":
                 $.get(this.modalContentUrl).done((modal) => {                    
-                    self.appendTo.prepend(modal);
-                    $("#savecookie").on('click', function(){
+                    self.appendTo.prepend(modal);                    
+                    $("#myModal").modal({backdrop: 'static', keyboard: false});
+                    console.log("in modal!");
+                    console.log(this);
+                    console.log(self);
+                    self.setButtons(self);
+
+                    /*$("#savecookie").on('click', function(){
                         wes_cookie.set().then(function(){
                             $("#myModal").modal('hide');
                             self.injectScripts();
                         });
                     });
-                    $("#myModal").modal({backdrop: 'static', keyboard: false});
+                    
+                    var path = "https://www.wes.org/";
+                    if (window.location.href.indexOf("/ca/") !== -1){
+                        path += "ca/";
+                    }
+
+                    $("#pp").attr("href", path + "privacy-policy/");
+                    $("#cc").attr("href", path + "cookie-policy/");*/
                 });
             case "redirect":
                 break;
             default: break;
         }
     }
+
+    setButtons(that){
+        console.log("in setButtons!");
+        console.log(this);
+        var path = "https://www.wes.org/";
+        if (window.location.href.indexOf("/ca/") !== -1){
+            path += "ca/";
+        }
+
+        $("#pp").attr("href", path + "privacy-policy/");
+        $("#cc").attr("href", path + "cookie-policy/");
+
+        $("#btnIAccept").on("click", function(){ 
+            wes_cookie.set().then(function(){
+                if (that.mode === "alert"){
+                    $(".newPrivacyAlert").hide('slow'); 
+                }
+                else{
+                    $("#myModal").modal('hide');
+                    that.injectScripts();
+                }
+                
+            });
+        });
+    }
     
     getModalContent(){
-        switch (this.site){
-            case "wes": return "https://jsgdps.azurewebsites.net/terms.html";
-            case "imp": return "";
-            case "wenr": return "";
-            case "gtb": return "";
-            default: return "https://jsgdps.azurewebsites.net/terms.html";
-        }
+        return window.location.hostname + "/terms.html";
     }
 
     getAlertContent(){
-        switch (this.site){
-            case "wes": return "https://jsgdps.azurewebsites.net/alertText.html";
-            case "imp": return "";
-            case "wenr": return "";
-            case "gtb": return "";
-            default: return "https://jsgdps.azurewebsites.net/alertText.html";
-        }
-    }
+        return window.location.hostname + "/alertText.html";
+    }    
 
     injectScripts(){
         this.ScriptsToInject.forEach(script => {
@@ -142,7 +168,6 @@ class user_consent{
     checkParams(){
         if (!Array.isArray(this.ScriptsToInject)) this.throwError("js must be an array of js scripts.");
         if (this.appendTo instanceof jQuery === false) this.throwError("appendTo must be a jquery selecter object");        
-        if (["wes", "gtb", "imp", "wenr"].indexOf(this.site) === -1) this.throwError("Invalid site parameter.");
     }
 
     throwError(msg){
