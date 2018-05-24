@@ -157,6 +157,7 @@ class user_consent{
     }
 
     getAlertContent(){
+        console.log(window.location.hostname);
         return window.location.hostname + "/alertText.html";
     }    
 
