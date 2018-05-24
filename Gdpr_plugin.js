@@ -1,5 +1,5 @@
 /*
-WES GDPR popup - coooooookie
+WES GDPR consent popup.
 */
 
 var wes_cookie = {
@@ -76,7 +76,6 @@ class user_consent{
                 console.log("error occured: " + error)
 
                 // continue as if eu
-                self.injectScripts();
                 self.showConsent();
             }            
         });
@@ -136,7 +135,7 @@ class user_consent{
 
     injectScripts(){
         this.ScriptsToInject.forEach(script => {
-            $.getScript("https://jsgdps.azurewebsites.net/" + script);		
+            $.getScript("https://applications.wes.org/js/" + script);		
         });
     }
 
