@@ -115,7 +115,10 @@ class user_consent{
         $("#btnIAccept").on("click", function(){ 
             wes_cookie.set().then(function(){
                 if (self.mode === "alert"){
-                    $(".newPrivacyAlert").hide('slow', function(){ $(".nav-main").css('margin-top', 0); }); 
+                    $(".newPrivacyAlert").hide('slow', function(){ 
+                        $(".nav-main").css('margin-top', 0); 
+                        $(".header").css("margin-top", "205px");
+                    }); 
                 }
                 else{
                     $("#myModal").modal('hide');
