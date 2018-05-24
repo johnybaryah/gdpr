@@ -115,7 +115,7 @@ class user_consent{
         $("#btnIAccept").on("click", function(){ 
             wes_cookie.set().then(function(){
                 if (self.mode === "alert"){
-                    $(".newPrivacyAlert").hide('slow'); 
+                    $(".newPrivacyAlert").hide('slow', function(){ $(".nav-main").css('margin-top', 0); }); 
                 }
                 else{
                     $("#myModal").modal('hide');
