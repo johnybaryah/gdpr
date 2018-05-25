@@ -7,7 +7,7 @@ class wes_cookie{
         this.name = name;
         this.val = 1;
         this.exp = 1825;
-        //this.domain = ".wes.org";
+        this.domain = ".wes.org";
         this.scriptLink = "https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js";
     }
 
@@ -22,7 +22,7 @@ class wes_cookie{
     set(){        
         return new Promise((resolve, reject) => {
             $.getScript(this.scriptLink).done(() => {
-                Cookies.set(this.name, this.val, { expires: this.exp });
+                Cookies.set(this.name, this.val, { expires: this.exp, domain: this.domain });
                 resolve(true);
             });
         });
