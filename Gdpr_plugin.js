@@ -13,7 +13,7 @@ class wes_cookie{
 
     get(){
         return new Promise((resolve, reject) => {
-            $.getScript(this.scriptLink).done(function(js){
+            $.getScript(this.scriptLink).done((js) => {
                 console.log(this);
                 console.log(Cookies.get(this.name));
                 resolve(typeof Cookies.get(this.name) !== "undefined");
@@ -23,7 +23,7 @@ class wes_cookie{
 
     set(){        
         return new Promise((resolve, reject) => {
-            $.getScript(this.scriptLink).done(function(){
+            $.getScript(this.scriptLink).done(() => {
                 Cookies.set(this.name, this.val, { expires: this.exp });
                 resolve(true);
             });
