@@ -14,8 +14,6 @@ class wes_cookie{
     get(){
         return new Promise((resolve, reject) => {
             $.getScript(this.scriptLink).done((js) => {
-                console.log(this);
-                console.log(Cookies.get(this.name));
                 resolve(typeof Cookies.get(this.name) !== "undefined");
             });
         });
@@ -65,31 +63,22 @@ class user_consent{
     }
 
     init(){
-        this.cookie_eu.get().then((consentCookieSet) => {
-            console.log(consentCookieSet);
+        this.cookie_eu.get().then((consentCookieSet) => {            
             if (consentCookieSet) {
                 this.injectScripts();
                 return;
-            }
+            }           
 
-            // if eu
-
-            // else
-
-
-            this.isEu()
-                .then((isEu) => {
-                    console.log(isEu);
-                    if (isEu){
-                        this.showConsent();
-                        return;
-                    }
-                    else{
-                        this.mode = "alert";
-                        this.injectScripts();
-                        this.showConsent()
-                    }
-                })
+            this.isEu().then((isEu) => {
+                if (isEu){
+                    this.showConsent();
+                    return;
+                }
+                
+                this.mode = "alert";
+                this.injectScripts();
+                this.showConsent();                    
+            })
         });
     }
 
@@ -99,7 +88,6 @@ class user_consent{
             // val 0 => non eu | val 1 => eu
             this.cookie_ip.get().then((cookieSet) => {
                 if (!cookieSet){                    
-                    console.log("calling ip stack");
                     Ip.getInfo()
                         .done((json) => {
                             if (!json.location.is_eu) this.cookie_ip.set().then(resolve(false));
