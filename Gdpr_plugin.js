@@ -14,14 +14,10 @@ class wes_cookie{
     get(){
         return new Promise((resolve, reject) => {
             $.getScript(this.scriptLink).done(function(js){
-                resolve(Cookies.get(this.name));
+                resolve(typeof Cookies.get(this.name) !== "undefined");
             });
         });
-    }
-
-    isCookieSet() {
-        return this.get().then((cookie) => typeof cookie !== "undefined");
-    }
+    }    
 
     set(){        
         return new Promise((resolve, reject) => {
@@ -67,7 +63,7 @@ class user_consent{
     }
 
     init(){
-        this.cookie_eu.isCookieSet().then((consentCookieSet) => {
+        this.cookie_eu.get().then((consentCookieSet) => {
             if (consentCookieSet) {
                 this.injectScripts();
                 return;
@@ -100,7 +96,7 @@ class user_consent{
         return new Promise((resolve, reject) => {
             // first check if cookie is set for eu customer
             // val 0 => non eu | val 1 => eu
-            this.cookie_ip.isCookieSet().then((cookieSet) => {
+            this.cookie_ip.get().then((cookieSet) => {
                 if (!cookieSet){
                     try {
                         console.log("calling ip stack");
