@@ -60,9 +60,7 @@ class user_consent{
         this.appendTo = options.el.name;        
 
         this.cookie_eu = new wes_cookie("_eu_wes");
-        this.cookie_ip = new wes_cookie("_eu_ip");
-
-        this._isEu = this.isEu();
+        this.cookie_ip = new wes_cookie("_eu_ip");        
         
         this.checkParams();
 
@@ -71,44 +69,56 @@ class user_consent{
     }
 
     init(){
-        this.cookie_eu.isCookieSet().then((cookieAlreadySet) => {
-            if (cookieAlreadySet) {
+        this.cookie_eu.isCookieSet().then((consentCookieSet) => {
+            if (consentCookieSet) {
                 this.injectScripts();
                 return;
             }
 
-            if (this._isEu){
-                this.showConsent();
-                return;
-            }
+            // if eu
 
-            this.mode = "alert";
-            this.injectScripts();
+            // else
+
+
+            this.isEu()
+                .then((isEu)=>{
+                    if (isEu){
+                        this.showConsent();
+                        return;
+                    }
+                    else{
+                        this.mode = "alert";
+                        this.injectScripts();
+                    }                    
+                })
+                .fail(()=>{
+                    this.mode = "alert";
+                    this.injectScripts();
+                })            
         });
     }
 
-    isEu(){
-        // first check if cookie is set for eu customer
-        // val 0 => non eu | val 1 => eu
-        this.cookie_ip.isCookieSet().then((cookieSet) => {
-            if (!cookieSet){
-                try {
-                    console.log("calling ip stack");
-                    Ip.getInfo().done((json)=>{
-                        if (!json.location.is_eu){
-                            this.cookie_ip.set(false)
-                        }
-                        return json.location.is_eu; 
-                    });
+    isEu(){        
+        var _this = this;
+        return new Promise(function(resolve, reject){
+            // first check if cookie is set for eu customer
+            // val 0 => non eu | val 1 => eu
+            _this.cookie_ip.isCookieSet().then((cookieSet) => {
+                if (!cookieSet){
+                    try {
+                        console.log("calling ip stack");
+                        Ip.getInfo().done((json) => {
+                            if (!json.location.is_eu) _this.cookie_ip.set().then(resolve(false));
+                            else resolve(true);
+                        });
+                    }
+                    catch(error) {                        
+                        // if any error due to api not reachable etc... we'd default to non eu behavior
+                        reject("ip stack unreachable: "+ error);
+                    }
                 }
-                catch(error) {
-                    console.log("error occured: " + error);
-        
-                    // if any error due to api not reachable etc... we'd default to non eu behavior
-                    return false;
-                }
-            }
-            else return true;
+                else resolve(false);
+            });
         });
     }
     
