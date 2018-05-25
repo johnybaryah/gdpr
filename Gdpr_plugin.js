@@ -2,28 +2,39 @@
 WES GDPR consent popup.
 */
 
-var wes_cookie = {
-    name : "_eu_wes",
-    val: 1,
-    scriptLink : "https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js",
-    get: function() {
-        var self = this;
+class wes_cookie{
+    constructor(name){
+        this.name = name;
+        this.val = 1;
+        this.exp = 1825;
+        this.domain = ".wes.org";
+        this.scriptLink = "https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js";
+    }
+
+    get(){
+        var _this = this;
         return new Promise(function(resolve, reject){
-            $.getScript(self.scriptLink).done(function(js){
-                resolve(typeof Cookies.get(self.name, { domain: 'wes.org' }) !== "undefined");
+            $.getScript(_this.scriptLink).done(function(js){
+                resolve(Cookies.get(_this.name));
             });
         });
-    },
-    set: function() {
-        var self = this;      
+    }
+
+    isCookieSet() {
+        return this.get().then((cookie) => typeof cookie !== "undefined");
+    }
+
+    set(){
+        var _this = this;
         return new Promise(function(resolve, reject){
-            $.getScript(self.scriptLink).done(function(){
-                Cookies.set(self.name, self.val, { expires: 1825, domain: 'wes.org' });
+            $.getScript(_this.scriptLink).done(function(){
+                Cookies.set(_this.name, _this.val, { expires: _this.exp, domain: _this.domain });
                 resolve();
             });
         });
-    },
-    toString: function() {
+    }
+
+    toString(){
         return this.name + ", " + this.val;
     }
 }
@@ -46,8 +57,12 @@ class user_consent{
 
         this.mode = "modal";
         this.ScriptsToInject = options.js;
-        this.appendTo = options.el.name;
-        this.site = options.site;
+        this.appendTo = options.el.name;        
+
+        this.cookie_eu = new wes_cookie("_eu_wes");
+        this.cookie_ip = new wes_cookie("_eu_ip");
+
+        this._isEu = this.isEu();
         
         this.checkParams();
 
@@ -55,31 +70,48 @@ class user_consent{
         this.alertContentUrl = this.getAlertContent();
     }
 
-    init(){        
-        wes_cookie.get().then((cookieAlreadySet)=>{
+    init(){
+        this.cookie_eu.isCookieSet().then((cookieAlreadySet) => {
             if (cookieAlreadySet) {
                 this.injectScripts();
                 return;
             }
 
-            try {
-                Ip.getInfo().done((json)=>{
-                    if (!json.location.is_eu) {
-                        this.mode = "alert";
-                        this.injectScripts();
-                    }
-                    this.showConsent();
-                });
-            }
-            catch(error){
-                console.log("error occured: " + error)
-
-                // continue as if eu
+            if (this._isEu){
                 this.showConsent();
-            }            
+                return;
+            }
+
+            this.mode = "alert";
+            this.injectScripts();
         });
     }
 
+    isEu(){
+        // first check if cookie is set for eu customer
+        // val 0 => non eu | val 1 => eu
+        this.cookie_ip.isCookieSet().then((cookieSet) => {
+            if (!cookieSet){
+                try {
+                    console.log("calling ip stack");
+                    Ip.getInfo().done((json)=>{
+                        if (!json.location.is_eu){
+                            this.cookie_ip.set(false)
+                        }
+                        return json.location.is_eu; 
+                    });
+                }
+                catch(error) {
+                    console.log("error occured: " + error);
+        
+                    // if any error due to api not reachable etc... we'd default to non eu behavior
+                    return false;
+                }
+            }
+            else return true;
+        });
+    }
+    
     showConsent(){        
         switch(this.mode){
             case "alert":
@@ -102,7 +134,7 @@ class user_consent{
     }
 
     setButtons(){
-        var self = this;
+        var _this = this;
 
         var path = "https://www.wes.org/";
         if (window.location.href.indexOf("/ca/") !== -1){
@@ -113,16 +145,13 @@ class user_consent{
         $("#cc").attr("href", path + "cookie-policy/");
 
         $("#btnIAccept").on("click", function(){ 
-            wes_cookie.set().then(function(){
-                if (self.mode === "alert"){
-                    $(".newPrivacyAlert").hide('slow', function(){ 
-                        $(".nav-main").css('margin-top', 0); 
-                        $(".header").css("margin-top", "205px");
-                    }); 
+            _this.cookie_eu.set(null).then(function(){
+                if (_this.mode === "alert"){
+                    $(".newPrivacyAlert").hide('slow'); 
                 }
                 else{
                     $("#myModal").modal('hide');
-                    self.injectScripts();
+                    _this.injectScripts();
                 }                
             });
         });
