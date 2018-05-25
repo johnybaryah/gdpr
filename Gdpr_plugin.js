@@ -109,7 +109,7 @@ class user_consent{
                             if (!json.location.is_eu) this.cookie_ip.set().then(resolve(false));
                             else resolve(true);
                         })
-                        .catch( (error) => { console.log(error); resolve(false); });
+                        .catch( (error) => { reject("Ipstack failed: "+ error); });
                 }
                 else resolve(false);
             });
