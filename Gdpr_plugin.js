@@ -14,6 +14,8 @@ class wes_cookie{
     get(){
         return new Promise((resolve, reject) => {
             $.getScript(this.scriptLink).done(function(js){
+                console.log(this);
+                console.log(Cookies.get(this.name));
                 resolve(typeof Cookies.get(this.name) !== "undefined");
             });
         });
