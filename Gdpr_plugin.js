@@ -66,6 +66,7 @@ class user_consent{
 
     init(){
         this.cookie_eu.get().then((consentCookieSet) => {
+            console.log(consentCookieSet);
             if (consentCookieSet) {
                 this.injectScripts();
                 return;
@@ -78,6 +79,7 @@ class user_consent{
 
             this.isEu()
                 .then((isEu) => {
+                    console.log(isEu);
                     if (isEu){
                         this.showConsent();
                         return;
