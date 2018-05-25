@@ -88,12 +88,8 @@ class user_consent{
                         this.mode = "alert";
                         this.injectScripts();
                         this.showConsent()
-                    }                    
-                }).catch((reason) => {
-                    console.log(reason);
-                    this.mode = "alert";
-                    this.injectScripts();
-                });            
+                    }
+                })
         });
     }
 
@@ -109,7 +105,7 @@ class user_consent{
                             if (!json.location.is_eu) this.cookie_ip.set().then(resolve(false));
                             else resolve(true);
                         })
-                        .catch( (error) => { reject("Ipstack failed: "+ error); });
+                        .catch((error) => resolve(false));
                 }
                 else resolve(false);
             });
