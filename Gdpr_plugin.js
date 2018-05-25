@@ -102,14 +102,14 @@ class user_consent{
             // first check if cookie is set for eu customer
             // val 0 => non eu | val 1 => eu
             this.cookie_ip.get().then((cookieSet) => {
-                if (!cookieSet){
-                    
-                        console.log("calling ip stack");
-                        Ip.getInfo().done((json) => {
+                if (!cookieSet){                    
+                    console.log("calling ip stack");
+                    Ip.getInfo()
+                        .done((json) => {
                             if (!json.location.is_eu) this.cookie_ip.set().then(resolve(false));
                             else resolve(true);
-                        }).catch((error)=>{alert("BOOOOOM!");});
-                    
+                        })
+                        .catch( (error) => { console.log(error); resolve(false); });
                 }
                 else resolve(false);
             });
