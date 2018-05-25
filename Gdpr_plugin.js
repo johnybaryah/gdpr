@@ -103,17 +103,13 @@ class user_consent{
             // val 0 => non eu | val 1 => eu
             this.cookie_ip.get().then((cookieSet) => {
                 if (!cookieSet){
-                    try {
+                    
                         console.log("calling ip stack");
                         Ip.getInfo().done((json) => {
                             if (!json.location.is_eu) this.cookie_ip.set().then(resolve(false));
                             else resolve(true);
-                        });
-                    }
-                    catch(error) {                        
-                        // if any error due to api not reachable etc... we'd default to non eu behavior
-                        reject("ip stack unreachable: "+ error);
-                    }
+                        }).catch((error)=>{alert("BOOOOOM!");});
+                    
                 }
                 else resolve(false);
             });
