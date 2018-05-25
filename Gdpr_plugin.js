@@ -87,6 +87,7 @@ class user_consent{
                     else{
                         this.mode = "alert";
                         this.injectScripts();
+                        this.showConsent()
                     }                    
                 }).catch((reason) => {
                     console.log(reason);
