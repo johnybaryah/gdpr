@@ -2,6 +2,8 @@
 WES GDPR consent popup.
 */
 
+import COOKIE from "https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js";
+
 class wes_cookie{
     constructor(name){
         this.name = name;
@@ -13,6 +15,7 @@ class wes_cookie{
 
     get(){
         return new Promise((resolve, reject) => {
+            console.log(typeof COOKIE.Cookies.get !== 'undefined' && $.isFunction(COOKIE.Cookies.get));
             $.getScript(this.scriptLink).done((js) => {
                 resolve(typeof Cookies.get(this.name) !== "undefined");
             });
