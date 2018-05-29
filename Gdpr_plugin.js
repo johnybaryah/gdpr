@@ -2,7 +2,7 @@
 WES GDPR consent popup.
 */
 
-import COOKIE from "https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js";
+const COOKIE = require("https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js");
 
 class wes_cookie{
     constructor(name){
