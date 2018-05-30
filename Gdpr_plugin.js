@@ -57,8 +57,8 @@ class user_consent{
         this.appendTo = options.el.name;
         this.cookieDomain = this.getDomain();
 
-        this.cookie_eu = new wes_cookie("_eu_wes", cookieDomain);
-        this.cookie_ip = new wes_cookie("_eu_ip", cookieDomain);
+        this.cookie_eu = new wes_cookie("_eu_wes", this.cookieDomain);
+        this.cookie_ip = new wes_cookie("_eu_ip", this.cookieDomain);
         
         this.checkParams();
 
