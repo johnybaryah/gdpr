@@ -3,11 +3,11 @@ WES GDPR consent popup.
 */
 
 class wes_cookie{
-    constructor(name){
+    constructor(name, domain){
         this.name = name;
         this.val = 1;
         this.exp = 1825;
-        //this.domain = ".wes.org";
+        this.domain = domain;
         this.scriptLink = "https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js";
     }
 
@@ -22,7 +22,10 @@ class wes_cookie{
     set(){        
         return new Promise((resolve, reject) => {
             $.getScript(this.scriptLink).done(() => {
-                Cookies.set(this.name, this.val, { expires: this.exp });
+                Cookies.set(this.name, this.val, { 
+                    expires: this.exp, 
+                    domain: this.domain 
+                });
                 resolve(true);
             });
         });
@@ -51,10 +54,11 @@ class user_consent{
 
         this.mode = "modal";
         this.ScriptsToInject = options.js;
-        this.appendTo = options.el.name;        
+        this.appendTo = options.el.name;
+        this.cookieDomain = this.getDomain();
 
-        this.cookie_eu = new wes_cookie("_eu_wes");
-        this.cookie_ip = new wes_cookie("_eu_ip");        
+        this.cookie_eu = new wes_cookie("_eu_wes", cookieDomain);
+        this.cookie_ip = new wes_cookie("_eu_ip", cookieDomain);
         
         this.checkParams();
 
@@ -93,7 +97,7 @@ class user_consent{
                             if (!json.location.is_eu) this.cookie_ip.set().then(resolve(false));
                             else resolve(true);
                         })
-                        .catch((error) => resolve(false));
+                        .fail((error) => resolve(false));
                 }
                 else resolve(false);
             });
@@ -141,6 +145,11 @@ class user_consent{
                 }                
             });
         });
+    }
+
+    getDomain(){
+        var domain = window.location.hostname;
+        return domain.substring(domain.indexOf('.'), domain.indexOf('.org') + 4);
     }
     
     getModalContent(){
